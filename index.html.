@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Colorful Chronicle | Blog</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            yellow: '#f59e0b',
+                            cyan: '#06b6d4',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Poppins', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Analytics Placeholder -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_TRACKING_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'YOUR_TRACKING_ID');
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Poppins', sans-serif; }
+        
+        .blob-1 { position: fixed; top: -10%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(255,255,255,0) 70%); z-index: -1; border-radius: 50%; }
+        .blob-2 { position: fixed; bottom: -10%; right: -5%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, rgba(255,255,255,0) 70%); z-index: -1; border-radius: 50%; }
+        .blob-3 { position: fixed; top: 40%; left: 30%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, rgba(255,255,255,0) 70%); z-index: -1; border-radius: 50%; }
+
+        .text-gradient { background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .spinner { border: 4px solid rgba(139, 92, 246, 0.1); border-left-color: #8b5cf6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-800 antialiased overflow-x-hidden relative">
+
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+    <div class="blob-3"></div>
+
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="text-2xl font-heading font-bold tracking-tight flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-purple to-brand-pink text-white flex items-center justify-center">
+                            <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                        </div>
+                        Chroma<span class="text-brand-purple">Blog</span>
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#articles" class="text-slate-600 hover:text-brand-purple font-medium transition-colors">Read Articles</a>
+                    <!-- Hidden by default until Admin logs in -->
+                    <button id="open-modal-btn" class="hidden bg-gradient-to-r from-brand-purple to-brand-pink hover:opacity-90 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-lg shadow-pink-200 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Write a Post
+                    </button>
+                </div>
+
+                <div class="md:hidden flex items-center gap-4">
+                    <!-- Hidden by default until Admin logs in -->
+                    <button id="mobile-open-modal-btn" class="hidden text-brand-purple flex items-center gap-1 font-medium">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i> Post
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" id="admin-modal-backdrop"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 text-center">
+            <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl w-full max-w-md border border-slate-100 p-8">
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-900">
+                        <i data-lucide="lock" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-2xl font-heading font-bold text-slate-900">Admin Login</h3>
+                    <p class="text-slate-500 text-sm mt-1">Enter password to unlock editing tools.</p>
+                </div>
+                <form id="admin-form" class="space-y-4">
+                    <input type="password" id="admin-password" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-purple outline-none text-slate-900 text-center" placeholder="Enter password...">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-medium transition-all">Unlock</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div id="post-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-2xl w-full border border-slate-100">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-heading font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="pen-tool" class="text-brand-purple w-6 h-6"></i> Create New Post
+                        </h3>
+                        <button id="close-modal-btn" class="text-slate-400 hover:text-slate-600 transition-colors">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                    <form id="new-post-form" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Post Title</label>
+                            <input type="text" id="post-title" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-purple outline-none text-slate-900" placeholder="e.g., My First Database Post!">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                                <select id="post-category" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-purple outline-none text-slate-900 bg-white">
+                                    <option value="Lifestyle">Lifestyle</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Travel & Food">Travel & Food</option>
+                                    <option value="Art & Design">Art & Design</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Your Name</label>
+                                <input type="text" id="post-author" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-purple outline-none text-slate-900" placeholder="e.g., Jane Doe">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Post Content</label>
+                            <textarea id="post-content" required rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-purple outline-none text-slate-900 resize-none" placeholder="Write your amazing story here..."></textarea>
+                        </div>
+                        <div class="pt-4 flex justify-end gap-3">
+                            <button type="button" id="cancel-btn" class="px-6 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+                            <button type="submit" id="submit-btn" class="bg-gradient-to-r from-brand-purple to-brand-pink hover:opacity-90 text-white px-8 py-3 rounded-xl font-medium transition-all shadow-lg shadow-pink-200 flex items-center gap-2">
+                                Publish Post
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Read Post Modal -->
+    <div id="read-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" id="read-modal-backdrop"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-3xl w-full border border-slate-100 flex flex-col max-h-[90vh]">
+                <div class="h-48 sm:h-72 w-full relative flex-shrink-0">
+                    <img id="read-modal-image" src="" alt="Cover" class="w-full h-full object-cover">
+                    <button id="close-read-modal-btn" class="absolute top-4 right-4 bg-white/70 hover:bg-white backdrop-blur text-slate-900 p-2 rounded-full transition-colors shadow-sm">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <div class="p-6 sm:p-10 overflow-y-auto">
+                    <div class="flex items-center gap-3 mb-4 text-sm font-medium">
+                        <span id="read-modal-category" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+                        <span id="read-modal-date" class="text-slate-500"></span>
+                    </div>
+                    <h2 id="read-modal-title" class="text-3xl sm:text-4xl font-heading font-bold text-slate-900 mb-6"></h2>
+                    <div class="flex items-center gap-3 pb-6 border-b border-slate-100 mb-6">
+                        <div id="read-modal-avatar" class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm"></div>
+                        <span id="read-modal-author" class="font-medium text-slate-700"></span>
+                    </div>
+                    <div id="read-modal-content" class="text-slate-700 leading-relaxed whitespace-pre-wrap text-lg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+        <div class="bg-white rounded-[2rem] p-4 sm:p-6 shadow-xl shadow-slate-200/50 border border-white">
+            <div class="flex flex-col lg:flex-row gap-8 items-center">
+                <div class="w-full lg:w-1/2">
+                    <div class="relative w-full aspect-video lg:aspect-square max-h-[500px] rounded-2xl overflow-hidden group">
+                        <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Workspace" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-sm font-bold text-brand-pink shadow-sm">✨ Featured</div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 px-2 lg:px-8 py-4">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-900 leading-[1.1] mb-6">
+                        Your Blog is now <span class="text-gradient">Live</span>.
+                    </h1>
+                    <p class="text-lg text-slate-600 mb-8">
+                        Everything you post is now being saved to a secure cloud database. Your visitors can read your thoughts, but only you can post!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Articles Grid -->
+    <section id="articles" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-[500px]">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-3xl font-heading font-bold text-slate-900 flex items-center gap-3">
+                <i data-lucide="sparkles" class="w-8 h-8 text-brand-yellow"></i> Latest Articles
+            </h2>
+        </div>
+        
+        <div id="loading-state" class="flex flex-col items-center justify-center py-20">
+            <div class="spinner mb-4"></div>
+            <p class="text-slate-500 font-medium">Connecting to cloud database...</p>
+        </div>
+
+        <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
+            <div class="w-16 h-16 bg-purple-100 text-brand-purple rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="book-open" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-heading font-bold text-slate-900 mb-2">No posts yet</h3>
+            <p class="text-slate-500 mb-6">Check back later for new content!</p>
+        </div>
+        
+        <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 hidden">
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-4">
+            <p>&copy; 2026 ChromaBlog. Cloud-powered database edition.</p>
+            <!-- Secret Admin Login Button -->
+            <button id="open-admin-btn" class="text-slate-600 hover:text-white text-sm flex items-center gap-1 transition-colors">
+                <i data-lucide="lock" class="w-3 h-3"></i> Admin Login
+            </button>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // Admin Security Logic
+        let isAdmin = false; 
+        const adminModal = document.getElementById('admin-modal');
+        const openAdminBtn = document.getElementById('open-admin-btn');
+        const adminBackdrop = document.getElementById('admin-modal-backdrop');
+        const adminForm = document.getElementById('admin-form');
+        
+        openAdminBtn.addEventListener('click', () => adminModal.classList.remove('hidden'));
+        adminBackdrop.addEventListener('click', () => adminModal.classList.add('hidden'));
+
+        adminForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pwd = document.getElementById('admin-password').value;
+            if(pwd === 'admin123') {
+                isAdmin = true;
+                adminModal.classList.add('hidden');
+                document.getElementById('open-modal-btn').classList.remove('hidden');
+                document.getElementById('mobile-open-modal-btn').classList.remove('hidden');
+                alert("Unlocked! You can now write and delete posts.");
+                // Re-render posts so the delete buttons show up
+                if(currentPostsData) renderPosts(currentPostsData);
+            } else {
+                alert("Incorrect Password!");
+            }
+            document.getElementById('admin-password').value = '';
+        });
+
+        // Write Post Modal Logic
+        const postModal = document.getElementById('post-modal');
+        const openBtn = document.getElementById('open-modal-btn');
+        const mobileOpenBtn = document.getElementById('mobile-open-modal-btn');
+        const closeBtn = document.getElementById('close-modal-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+
+        const openModal = () => { if(isAdmin) postModal.classList.remove('hidden'); };
+        const closeModal = () => {
+            postModal.classList.add('hidden');
+            document.getElementById('new-post-form').reset();
+        };
+
+        openBtn.addEventListener('click', openModal);
+        mobileOpenBtn.addEventListener('click', openModal);
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+    </script>
+
+    <!-- FIREBASE INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        window.currentPostsData = []; // Made global for admin re-render
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth failed:", error);
+                document.getElementById('loading-state').innerHTML = `<p class="text-red-500">Error connecting to database.</p>`;
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) loadPosts();
+        });
+
+        initAuth();
+
+        function getRandomImage(category) {
+            const images = {
+                'Technology': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+                'Lifestyle': 'https://images.unsplash.com/photo-1505909182942-e2f09aee3e89?auto=format&fit=crop&w=800&q=80',
+                'Travel & Food': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80',
+                'Art & Design': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80'
+            };
+            return images[category] || images['Technology'];
+        }
+
+        function getCategoryColorClass(category) {
+            if (category === 'Technology') return 'text-brand-cyan hover:shadow-cyan-100';
+            if (category === 'Lifestyle') return 'text-brand-pink hover:shadow-pink-100';
+            if (category === 'Travel & Food') return 'text-brand-yellow hover:shadow-amber-100';
+            return 'text-brand-purple hover:shadow-purple-100';
+        }
+
+        function loadPosts() {
+            const postsRef = collection(db, 'artifacts', appId, 'public', 'data', 'blog_posts');
+            onSnapshot(postsRef, (snapshot) => {
+                const posts = [];
+                snapshot.forEach((doc) => { posts.push({ id: doc.id, ...doc.data() }); });
+                posts.sort((a, b) => b.createdAt - a.createdAt);
+                window.currentPostsData = posts; 
+                window.renderPosts(posts); // Call global render function
+            });
+        }
+
+        window.renderPosts = function(posts) {
+            const grid = document.getElementById('articles-grid');
+            const loading = document.getElementById('loading-state');
+            const empty = document.getElementById('empty-state');
+
+            loading.classList.add('hidden');
+
+            if (posts.length === 0) {
+                grid.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            posts.forEach(post => {
+                const colorClass = getCategoryColorClass(post.category);
+                const colorOnly = colorClass.split(' ')[0]; 
+                const shadowOnly = colorClass.split(' ')[1]; 
+                const dateString = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(post.createdAt));
+
+                // ONLY show delete button if isAdmin is true
+                const deleteBtnHtml = isAdmin 
+                    ? `<button class="delete-btn absolute bottom-4 right-4 bg-red-50 text-red-500 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors z-10" data-id="${post.id}" title="Delete Post"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` 
+                    : '';
+
+                const articleHTML = `
+                    <article class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl ${shadowOnly} hover:-translate-y-1 transition-all duration-300 border border-slate-100 group flex flex-col relative">
+                        <div class="h-56 overflow-hidden relative bg-slate-100 flex-shrink-0">
+                            <img src="${post.imageUrl}" alt="${post.category}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur ${colorOnly} text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">${post.category}</div>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <p class="text-sm text-slate-500 mb-3">${dateString} • 3 min read</p>
+                            <h3 class="text-xl font-heading font-bold text-slate-900 mb-3 group-hover:${colorOnly} transition-colors">
+                                ${post.title}
+                            </h3>
+                            <p class="text-slate-600 flex-grow line-clamp-3">${post.content}</p>
+                            
+                            <button class="read-more-btn text-left mt-2 mb-6 font-medium ${colorOnly} flex items-center gap-1 hover:underline w-fit" data-id="${post.id}">
+                                Read full article <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                            
+                            <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                                <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                    ${post.author ? post.author.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <span class="text-sm font-medium text-slate-700 truncate">${post.author}</span>
+                            </div>
+                        </div>
+                        ${deleteBtnHtml}
+                    </article>
+                `;
+                grid.insertAdjacentHTML('beforeend', articleHTML);
+            });
+
+            lucide.createIcons();
+
+            document.querySelectorAll('.read-more-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-id');
+                    const post = window.currentPostsData.find(p => p.id === postId);
+                    if (post) openReadModal(post);
+                });
+            });
+
+            if(isAdmin) {
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const postId = e.currentTarget.getAttribute('data-id');
+                        if(confirm("Are you sure you want to delete this post?")) {
+                            try {
+                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'blog_posts', postId));
+                            } catch (err) {
+                                console.error("Error deleting document: ", err);
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        const postForm = document.getElementById('new-post-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            if(!isAdmin || !currentUser) return;
+
+            submitBtn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Publishing...';
+            submitBtn.disabled = true;
+
+            const title = document.getElementById('post-title').value;
+            const category = document.getElementById('post-category').value;
+            const author = document.getElementById('post-author').value;
+            const content = document.getElementById('post-content').value;
+
+            try {
+                const postsRef = collection(db, 'artifacts', appId, 'public', 'data', 'blog_posts');
+                await addDoc(postsRef, {
+                    title: title, category: category, author: author, content: content,
+                    imageUrl: getRandomImage(category), createdAt: Date.now(), userId: currentUser.uid 
+                });
+                document.getElementById('close-modal-btn').click();
+                document.getElementById('articles').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error("Error adding doc: ", error);
+                alert("Error publishing post.");
+            } finally {
+                submitBtn.innerHTML = 'Publish Post';
+                submitBtn.disabled = false;
+                lucide.createIcons();
+            }
+        });
+
+        // --- Read Modal Logic ---
+        const readModal = document.getElementById('read-modal');
+        const closeReadModalBtn = document.getElementById('close-read-modal-btn');
+        const readModalBackdrop = document.getElementById('read-modal-backdrop');
+
+        closeReadModalBtn.addEventListener('click', () => readModal.classList.add('hidden'));
+        readModalBackdrop.addEventListener('click', () => readModal.classList.add('hidden'));
+
+        function openReadModal(post) {
+            const colorClass = getCategoryColorClass(post.category);
+            const colorOnly = colorClass.split(' ')[0]; 
+
+            document.getElementById('read-modal-image').src = post.imageUrl;
+            document.getElementById('read-modal-category').textContent = post.category;
+            document.getElementById('read-modal-category').className = `px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-slate-50 border border-slate-100 ${colorOnly}`;
+            document.getElementById('read-modal-date').textContent = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(post.createdAt));
+            document.getElementById('read-modal-title').textContent = post.title;
+            document.getElementById('read-modal-author').textContent = post.author;
+            document.getElementById('read-modal-avatar').textContent = post.author ? post.author.charAt(0).toUpperCase() : '?';
+            document.getElementById('read-modal-content').textContent = post.content;
+            readModal.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
